@@ -1,0 +1,101 @@
+name: Build SmartTrack Admin APK
+
+on:
+
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: "zulu"
+          java-version: "21"
+
+
+      - name: Environment
+        run: |
+          echo "Node:"
+          node --version
+
+          echo "NPM:"
+          npm --version
+
+          echo "Java:"
+          java -version
+
+
+      - name: Install dependencies
+        run: npm ci
+
+
+      - name: Verify Central NPM package
+        run: |
+          test -f node_modules/cordova-plugin-ble-central/plugin.xml
+          test -f node_modules/cordova-plugin-ble-central/www/ble.js
+          grep -R "class BLECentralPlugin" node_modules/cordova-plugin-ble-central/src/android
+
+
+      - name: Capacitor Sync
+        run: npx cap sync android
+
+
+      - name: List Capacitor plugins
+        run: npx cap ls
+
+
+      - name: Verify Capacitor Central Integration
+        run: |
+          test -d android/capacitor-cordova-android-plugins
+
+          grep -R \
+            "class BLECentralPlugin" \
+            android/capacitor-cordova-android-plugins
+
+
+      - name: Make Gradle executable
+        working-directory: android
+        run: chmod +x ./gradlew
+
+
+      - name: Build APK
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+
+
+      - name: Verify APK
+        run: |
+          test -f android/app/build/outputs/apk/debug/app-debug.apk
+          ls -lh android/app/build/outputs/apk/debug/app-debug.apk
+
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SmartTrack-Admin-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30

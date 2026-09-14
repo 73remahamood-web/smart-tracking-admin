@@ -1,0 +1,13 @@
+{
+  "appId": "com.nes.admin",
+  "appName": "SmartTrack Admin",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "includePlugins": [
+    "cordova-plugin-ble-central",
+    "cordova.plugins.diagnostic"
+  ],
+  "cordova": {
+    "failOnUninstalledPlugins": true
+  }
+}

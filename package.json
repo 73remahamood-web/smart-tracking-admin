@@ -1,0 +1,15 @@
+{
+  "name": "smart-tracking-admin",
+  "version": "3.0.0",
+  "private": true,
+  "description": "SmartTrack BLE Central Admin App",
+  "dependencies": {
+    "@capacitor/android": "7.4.3",
+    "@capacitor/core": "7.4.3",
+    "cordova-plugin-ble-central": "2.0.0",
+    "cordova.plugins.diagnostic": "7.4.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "7.4.3"
+  }
+}
